@@ -1,6 +1,8 @@
-cass must-have {
+class must-have {
   include apt
-  apt::ppa { "ppa:webupd8team/java": }
+  apt::ppa { "ppa:webupd8team/java": 
+    before => Class['jboss'],
+  }
 
   exec { 'apt-get update':
     command => '/usr/bin/apt-get update',
@@ -48,6 +50,7 @@ cass must-have {
     command => "wget http://www.mirrorservice.org/sites/download.eclipse.org/eclipseMirror/technology/epp/downloads/release/luna/R/eclipse-jee-luna-R-linux-gtk-x86_64.tar.gz",
     cwd => "/home/vagrant",
     path => "/usr/bin/:/bin/",
+    creates => "/home/vagrant/eclipse-jee-luna-R-linux-gtk-x86_64.tar.gz"
   }
 
   exec { "unpack eclipse":
@@ -55,6 +58,10 @@ cass must-have {
     cwd => "/home/vagrant",
     require => Exec["download eclipse"],
     path => "/usr/bin/:/bin/",
+  }
+
+  class { 'jboss':
+    bindaddr    => '0.0.0.0',
   }
   
 }
